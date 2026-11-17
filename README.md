@@ -1,4 +1,4 @@
-# Eli Lie · Transplant Sound
+# Eli Lie
 
 The Eli Lie website: a home studio drawn like an early-90s adventure game. Click around the room. Glowing objects open pages; almost everything else does something.
 

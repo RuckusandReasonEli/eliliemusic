@@ -144,8 +144,10 @@
 
   var modal = $("modal"), mTitle = $("modalTitle"), mBody = $("modalBody"), mActions = $("modalActions");
   var lastFocus = null;
-  function openModal(title, bodyHtml, actions) {
+  var mBox = $("modalBox");
+  function openModal(title, bodyHtml, actions, wide) {
     lastFocus = document.activeElement;
+    mBox.classList.toggle("wide", !!wide);
     mTitle.textContent = title;
     mBody.innerHTML = bodyHtml;
     mActions.innerHTML = "";
@@ -168,6 +170,7 @@
   }
   function closeModal() {
     modal.hidden = true;
+    mBody.innerHTML = "";
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
   modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
@@ -435,10 +438,31 @@
   stage.addEventListener("pointercancel", endDrag);
   stage.addEventListener("click", function (e) { if (suppressClick) { e.stopPropagation(); e.preventDefault(); } }, true);
 
+  /* ---------- Presave popup (once per visit) ---------- */
+  function showPresave() {
+    if (!C.presave) return;
+    var seen = false;
+    try { seen = sessionStorage.getItem("elilie.presaveSeen") === "1"; } catch (e) { /* storage unavailable */ }
+    if (seen) return;
+    try { sessionStorage.setItem("elilie.presaveSeen", "1"); } catch (e) { /* ignore */ }
+    var url = String(C.presave).replace(/"/g, "&quot;");
+    openModal(
+      "NEW SINGLE: DRUNK",
+      '<p class="presave-lede">Presave it now and it lands in your library on release day.</p>' +
+      '<div class="presave-frame"><iframe src="' + url + '" title="Presave Drunk by Eli Lie" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write; encrypted-media"></iframe></div>',
+      [
+        { label: "OPEN PRESAVE IN A NEW TAB", href: C.presave, external: true },
+        { label: "ENTER THE STUDIO", close: true, primary: true }
+      ],
+      true
+    );
+  }
+
   /* ---------- Start ---------- */
   paintSky();
   applyDark();
   renderPicks();
   layout();
   say(defaultLine1());
+  showPresave();
 })();

@@ -4,6 +4,10 @@
   Leave a url as "" and the site shows that button as "SOON" until you fill it in.
 */
 window.ELI_CONFIG = {
+  // Presave popup: shows when someone first lands on the studio.
+  // Set to "" to turn the popup off (for example, after release day).
+  presave: "https://release.landr.com/991061878649",
+
   // Photo wall in the studio opens this in a new tab.
   // Example: "https://www.instagram.com/yourhandle/"
   instagram: "",
