@@ -9,7 +9,7 @@ window.ELI_CONFIG = {
   presave: "https://release.landr.com/991061878649",
 
   // Mailing list: the Google Apps Script web app that writes sign-ups to the sheet.
-  signupEndpoint: "",
+  signupEndpoint: "https://script.google.com/macros/s/AKfycbxeeUeU6UTFCK6yxFkspFy3a8HaxvCRR_4ba-q1QdXVdjcXKADqbfKPU-ImnW9Ty_GE1A/exec",
 
   // Photo wall in the studio opens this in a new tab.
   // Example: "https://www.instagram.com/yourhandle/"
