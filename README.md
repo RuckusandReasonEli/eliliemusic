@@ -36,7 +36,7 @@ Sound is always off until the visitor turns it on with the SOUND button.
 
 ## Mailing list
 
-Sign-ups from `join.html` go to the **Eli Lie Mailing List** Google Sheet (tab: Signups) through a Google Apps Script web app attached to that sheet. The script's code is in `apps-script/Code.gs`. If the same email signs up twice, its row is updated instead of duplicated.
+Sign-ups from `join.html` go to the **Eli Lie Mailing List** Google Sheet (tab: Signups) through a Google Apps Script web app attached to that sheet. The script's code is in `apps-script/Code.gs`. If the same email signs up twice, its row is updated instead of duplicated. The **Texts OK** column says Yes only when someone entered a phone number and ticked the opt-in box; only text people marked Yes.
 
 If you ever change the script: Deploy > Manage deployments > edit (pencil) > Version: New version > Deploy. That keeps the same web app URL.
 

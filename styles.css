@@ -209,6 +209,9 @@ a { color: var(--amber); }
 .join-form select { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--amber) 50%), linear-gradient(135deg, var(--amber) 50%, transparent 50%); background-position: calc(100% - 18px) 20px, calc(100% - 12px) 20px; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 30px; }
 .join-form input:focus, .join-form select:focus { outline: 3px solid var(--amber); outline-offset: 1px; }
 .join-form .note { margin: 0; font-size: 19px; line-height: 20px; color: var(--label); }
+.join-form .check { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border: 3px dashed var(--edge); }
+.join-form .check input { flex: 0 0 auto; width: 26px; height: 26px; margin: 2px 0 0; accent-color: var(--amber); cursor: pointer; }
+.join-form .check label { font-family: 'VT323', monospace; font-size: 20px; line-height: 21px; color: var(--paper); cursor: pointer; }
 .join-form .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .form-error { margin: 0; padding: 8px 12px; border: 3px solid #d64f3c; color: #ffb3a7; font-size: 22px; }
 .px.rec { min-height: 54px; background: #b8263a; border-color: #e0596b #5a0f1b #5a0f1b #e0596b; font-size: 14px; }

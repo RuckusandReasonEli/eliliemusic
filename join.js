@@ -22,6 +22,8 @@
     if (!name) return showError("Add your name.", f.name);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError("That email doesn't look right.", f.email);
     if (phone && phone.replace(/\D/g, "").length < 7) return showError("That phone number looks short. Leave it blank if you'd rather skip it.", f.phone);
+    var texts = f.textsOk.checked;
+    if (texts && !phone) return showError("Add your phone number to get texts, or untick the box.", f.phone);
     if (!city) return showError("Add your city.", f.city);
     if (!state) return showError("Pick your state.", f.state);
 
@@ -33,6 +35,7 @@
     data.append("name", name);
     data.append("email", email);
     data.append("phone", phone);
+    data.append("textsOk", texts ? "yes" : "");
     data.append("city", city);
     data.append("state", state);
     data.append("website", f.website.value);

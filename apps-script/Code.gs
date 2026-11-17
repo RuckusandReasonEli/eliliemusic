@@ -22,6 +22,8 @@ function doPost(e) {
   var name = clean_(p.name, 100);
   var email = clean_(p.email, 200).toLowerCase();
   var phone = clean_(p.phone, 40);
+  // Texts only with an explicit opt-in AND a phone number.
+  var textsOk = (phone && p.textsOk === 'yes') ? 'Yes' : 'No';
   var city = clean_(p.city, 100);
   var state = clean_(p.state, 60);
   var page = clean_(p.page, 200);
@@ -34,7 +36,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-    var row = [new Date(), name, email, phone, city, state, page];
+    var row = [new Date(), name, email, phone, textsOk, city, state, page];
     var last = sheet.getLastRow();
     var existing = 0;
     if (last > 1) {
