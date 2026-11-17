@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mailing list · Eli Lie</title>
+<meta name="description" content="Join the Eli Lie mailing list for new music and show dates.">
+<meta name="theme-color" content="#0b0812">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&amp;family=VT323&amp;family=Silkscreen&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="page-top">
+    <a class="px" href="index.html"><svg width="8" height="12" aria-hidden="true"><polygon points="7,0 7,12 0,6" fill="#f3e6c4"/></svg>BACK TO THE STUDIO</a>
+    <span class="crumb">CLOSE-UP: THE ANSWERING MACHINE</span>
+  </header>
+  <main class="page-main join">
+    <h1 class="page-title">MAILING LIST</h1>
+    <p class="page-sub">New songs, show dates near you, and the occasional secret level.</p>
+
+    <svg class="machine" viewBox="0 0 358 150" role="img" aria-label="An answering machine with a blinking message light">
+      <rect x="18" y="12" width="140" height="22" fill="#17151c"/><rect x="14" y="8" width="36" height="30" fill="#17151c"/><rect x="126" y="8" width="36" height="30" fill="#17151c"/>
+      <path d="M162 24 C 172 10, 178 40, 188 26 C 196 14, 200 40, 210 34" fill="none" stroke="#17151c" stroke-width="3"/>
+      <rect x="10" y="40" width="338" height="104" fill="#3a3440"/><rect x="10" y="40" width="338" height="8" fill="#4a4452"/><rect x="10" y="138" width="338" height="6" fill="#221e2a"/>
+      <rect x="26" y="56" width="140" height="70" fill="#121016"/><rect x="40" y="66" width="112" height="50" fill="#2b2040"/>
+      <rect x="60" y="78" width="26" height="26" fill="#57505f"/><rect x="66" y="84" width="14" height="14" fill="#121016"/>
+      <rect x="106" y="78" width="26" height="26" fill="#57505f"/><rect x="112" y="84" width="14" height="14" fill="#121016"/>
+      <rect x="188" y="56" width="116" height="40" fill="#1a1206"/>
+      <text id="lcd" x="200" y="88" fill="#ffc857" font-family="VT323, monospace" font-size="34">REC?</text>
+      <rect class="blink" x="318" y="62" width="16" height="12" fill="#ff4b4b"/>
+      <rect x="188" y="106" width="34" height="18" fill="#cbb995"/><rect x="230" y="106" width="34" height="18" fill="#cbb995"/><rect x="272" y="106" width="34" height="18" fill="#cbb995"/>
+    </svg>
+
+    <div id="joinStatus" class="dialog" aria-live="polite">You've reached Eli Lie. Leave your info at the beep and you'll hear about new music first.</div>
+
+    <form id="joinForm" class="join-form" novalidate>
+      <div class="field">
+        <label for="j-name">NAME</label>
+        <input id="j-name" name="name" type="text" autocomplete="name" required maxlength="100">
+      </div>
+      <div class="field">
+        <label for="j-email">EMAIL</label>
+        <input id="j-email" name="email" type="email" autocomplete="email" required maxlength="200">
+      </div>
+      <div class="field">
+        <label for="j-phone">PHONE <span class="opt">(OPTIONAL)</span></label>
+        <input id="j-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" aria-describedby="j-phone-note">
+        <p class="note" id="j-phone-note">Add it if you'd like a text when there's a show near you. Reply STOP anytime to opt out.</p>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="j-city">CITY</label>
+          <input id="j-city" name="city" type="text" autocomplete="address-level2" required maxlength="100">
+        </div>
+        <div class="field">
+          <label for="j-state">STATE</label>
+          <select id="j-state" name="state" autocomplete="address-level1" required>
+            <option value="">Choose…</option>
+            <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>District of Columbia</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+            <option>Outside the US</option>
+          </select>
+        </div>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label for="j-website">Leave this empty</label>
+        <input id="j-website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <p class="form-error" id="joinError" role="alert" hidden></p>
+      <button class="px rec" type="submit" id="joinSubmit"><svg width="12" height="12" aria-hidden="true"><rect x="2" y="0" width="8" height="12" fill="#f3e6c4"/><rect x="0" y="2" width="12" height="8" fill="#f3e6c4"/></svg>RECORD AND JOIN</button>
+      <p class="note">Only used for Eli Lie news. Never sold or shared.</p>
+    </form>
+  </main>
+  <footer class="page-foot">ELI LIE</footer>
+</div>
+<script src="config.js"></script>
+<script src="join.js"></script>
+</body>
+</html>

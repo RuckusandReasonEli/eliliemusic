@@ -202,9 +202,9 @@
       ["Music", "music.html", false],
       ["Shows", "shows.html", false],
       ["Games", "games.html", false],
+      ["Mailing list", "join.html", false],
       ["Photos (Instagram)", C.instagram || "", true],
       ["Videos", "", false],
-      ["Contact", "", false],
       ["Merch", "", false]
     ];
     var h = '<p>Every page, no clicking around required.</p><ul class="maplist">';
@@ -325,8 +325,8 @@
     // Glowing ones: these open pages or popups.
     ["screen", 230, 94, 84, 58, "Computer screen", "Use the computer: MUSIC", true, function () { go("music.html", "Booting the session. Opening MUSIC."); return null; }],
     ["calendar", 348, 30, 48, 58, "Corkboard calendar", "Check the calendar: SHOWS", true, function () { go("shows.html", "Opening SHOWS."); return null; }],
-    ["answering", 352, 120, 40, 20, "Answering machine", "Play the message: CONTACT", true, function () {
-      SFX.beep(); comingSoon("1 NEW MESSAGE", "Contact and booking are coming soon. For now the machine just blinks at you."); return null;
+    ["answering", 352, 120, 40, 20, "Answering machine", "Leave your number: MAILING LIST", true, function () {
+      SFX.beep(); go("join.html", "BEEP. Opening the MAILING LIST."); return null;
     }],
     ["photos", 398, 34, 80, 52, "Photo wall", "Look at the photos: INSTAGRAM", true, function () { openInstagram(); return null; }],
     ["gameboy", 418, 152, 24, 24, "Handheld game", "Play the handheld: GAMES", true, function () { SFX.gameboy(); go("games.html", "Loading GAMES."); return null; }],

@@ -8,6 +8,9 @@ window.ELI_CONFIG = {
   // Set to "" to turn the popup off (for example, after release day).
   presave: "https://release.landr.com/991061878649",
 
+  // Mailing list: the Google Apps Script web app that writes sign-ups to the sheet.
+  signupEndpoint: "",
+
   // Photo wall in the studio opens this in a new tab.
   // Example: "https://www.instagram.com/yourhandle/"
   instagram: "",
