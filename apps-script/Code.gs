@@ -1,6 +1,10 @@
 /**
- * Eli Lie mailing list: receives sign-ups from the website and writes them
- * to the "Signups" tab of the Google Sheet this script is attached to.
+ * Eli Lie fan data: receives mailing list sign-ups from the website and
+ * anonymous play sessions from the DRUNK game, and writes them to the
+ * "Signups" and "Game Sessions" tabs of the Google Sheet this script is attached to.
+ *
+ * After editing: Deploy > Manage deployments > pencil > Version: New version > Deploy
+ * (keeps the same web app URL, which the website and game use).
  *
  * Setup (one time):
  *   1. In the sheet: Extensions > Apps Script, paste this file, save.
@@ -15,6 +19,7 @@ var SHEET_NAME = 'Signups';
 
 function doPost(e) {
   var p = (e && e.parameter) || {};
+  if (p.type === 'game') return saveGame_(p);
 
   // Hidden field that only bots fill in. Pretend it worked.
   if (p.website) return json_({ ok: true });
@@ -43,6 +48,46 @@ function doPost(e) {
       var emails = sheet.getRange(2, 3, last - 1, 1).getValues();
       for (var i = 0; i < emails.length; i++) {
         if (String(emails[i][0]).toLowerCase() === email) { existing = i + 2; break; }
+      }
+    }
+    if (existing) sheet.getRange(existing, 1, 1, row.length).setValues([row]);
+    else sheet.appendRow(row);
+  } finally {
+    lock.releaseLock();
+  }
+  return json_({ ok: true });
+}
+
+// ---- DRUNK game sessions: one row per session, updated in place ----
+var GAME_SHEET = 'Game Sessions';
+var GAME_FIELDS = ['returning', 'device', 'city', 'region', 'country', 'source', 'medium', 'campaign', 'ending',
+  't_total', 't_home', 't_tavern', 't_club', 't_exhouse', 't_town', 't_car', 'path', 'drinks', 'blackouts', 'cops',
+  'key', 'spell', 'lyrics', 'cups', 'hints', 'listens', 'listenFrom', 'backFromSong', 'continued'];
+var NUMERIC = { t_total: 1, t_home: 1, t_tavern: 1, t_club: 1, t_exhouse: 1, t_town: 1, t_car: 1, drinks: 1, blackouts: 1,
+  cops: 1, lyrics: 1, cups: 1, hints: 1, listens: 1, backFromSong: 1 };
+
+function saveGame_(p) {
+  var session = clean_(p.session, 40);
+  if (!/^s[a-z0-9]+$/.test(session)) return json_({ ok: false, error: 'bad_session' });
+  var started = new Date(p.started);
+  if (isNaN(started.getTime())) started = new Date();
+  var row = [started, new Date(), session, clean_(p.visitor, 40)];
+  GAME_FIELDS.forEach(function (f) {
+    if (NUMERIC[f]) { var n = Math.max(0, Math.min(100000, parseInt(p[f], 10) || 0)); row.push(n); }
+    else row.push(clean_(p[f], f === 'path' ? 400 : 120));
+  });
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(GAME_SHEET);
+    var last = sheet.getLastRow();
+    var existing = 0;
+    if (last > 1) {
+      // newest rows are at the bottom; search from the end
+      var ids = sheet.getRange(2, 3, last - 1, 1).getValues();
+      for (var i = ids.length - 1; i >= 0; i--) {
+        if (ids[i][0] === session) { existing = i + 2; break; }
       }
     }
     if (existing) sheet.getRange(existing, 1, 1, row.length).setValues([row]);

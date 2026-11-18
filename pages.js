@@ -74,7 +74,17 @@
     }
   }
 
+  /* ----- Listen clicks (Music page) ----- */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest(".links a, .profile-grid a");
+    if (!a || typeof window.track !== "function") return;
+    var rel = a.closest(".release");
+    var title = rel ? (rel.querySelector("h3") || {}).textContent : "artist profile";
+    window.track("listen_click", { platform: a.textContent.trim(), release: title || "" });
+  });
+
   /* ----- Games ----- */
   var play = document.getElementById("playDrunk");
-  if (play && C.drunkGame) play.href = C.drunkGame;
+  if (play && C.drunkGame) play.href = C.drunkGame + (C.drunkGame.indexOf("?") === -1 ? "?" : "&") + "utm_source=eliliemusic&utm_medium=website&utm_content=games_page";
+  if (play) play.addEventListener("click", function () { if (typeof window.track === "function") window.track("game_start_click", { game: "drunk" }); });
 })();

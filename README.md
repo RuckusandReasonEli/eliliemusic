@@ -34,6 +34,22 @@ Everything else in the room reacts: guitars strum, synths play, the lamp turns t
 
 Sound is always off until the visitor turns it on with the SOUND button.
 
+## Visitor stats
+
+Google Analytics (property **Eli Lie website**, ID in `config.js` as `analyticsId`) counts visits, city, referrers and time on page automatically. `analytics.js` loads it on every page and adds these events:
+
+- `studio_object` (object, opens_page): every click on something in the studio
+- `zone_time` (zone, seconds): time in each zone on phones
+- `pick_found`, `sound_on`, `map_open`
+- `presave_popup_shown`, `presave_click`
+- `listen_click` (platform, release) on the Music page
+- `sign_up` (method, texts_opt_in) on the mailing list page
+- `game_start_click` on the Games page
+
+Tag your links so Analytics knows where people came from, for example `https://ruckusandreasoneli.github.io/eliliemusic/?utm_source=instagram`.
+
+The Drunk game logs its own play sessions to the Eli Lie Fan Data sheet (Game Sessions tab); see the drunkgame repo.
+
 ## Mailing list
 
 Sign-ups from `join.html` go to the **Eli Lie Mailing List** Google Sheet (tab: Signups) through a Google Apps Script web app attached to that sheet. The script's code is in `apps-script/Code.gs`. If the same email signs up twice, its row is updated instead of duplicated. The **Texts OK** column says Yes only when someone entered a phone number and ticked the opt-in box; only text people marked Yes.

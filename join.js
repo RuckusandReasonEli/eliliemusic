@@ -50,6 +50,7 @@
     fetch(C.signupEndpoint, { method: "POST", mode: "no-cors", body: data })
       .then(function () {
         lcd.textContent = "SAVED";
+        if (typeof window.track === "function") window.track("sign_up", { method: "mailing_list", texts_opt_in: texts ? "yes" : "no" });
         status.textContent = "Got it, " + name.split(" ")[0] + ". You're on the list. Watch your inbox for new music and show dates.";
         form.hidden = true;
         try { localStorage.setItem("elilie.joined", "1"); } catch (x) { /* ignore */ }

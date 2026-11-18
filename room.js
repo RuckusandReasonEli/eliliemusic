@@ -17,6 +17,8 @@
   }
 
   // Sound always starts OFF and is never remembered between visits.
+  function track(name, params) { if (typeof window.track === "function") window.track(name, params); }
+
   var S = {
     sound: false, dark: false, stringLights: true, blinds: false, tissue: true, steam: true,
     rackOn: true, fuzz: true, pizzaOpen: false, poster: 0, digs: 0, pets: 0, couchDug: false,
@@ -95,6 +97,7 @@
     if (S.picks.indexOf(id) !== -1) return false;
     S.picks.push(id); save("picks", S.picks); renderPicks(); SFX.found();
     var n = S.picks.length;
+    track("pick_found", { pick: id, picks_found: n });
     say(null, msg + " Guitar pick found! (" + n + " of 5)" + (n === 5 ? " That's all of them. You're officially a roadie." : ""), true);
     return true;
   }
@@ -216,6 +219,7 @@
       }
     });
     h += "</ul>";
+    h += '<p style="font-size:18px;line-height:19px;color:#a99cc0;margin:0 0 12px">This site counts anonymous visits with Google Analytics.</p>';
     openModal("MAP", h, [{ label: "CLOSE", close: true }]);
   }
 
@@ -350,6 +354,7 @@
     b.addEventListener("focus", function () { say(verb); });
     b.addEventListener("blur", function () { say(defaultLine1()); });
     b.addEventListener("click", function () {
+      track("studio_object", { object: id, opens_page: primary ? "yes" : "no" });
       say(verb);
       var out = fn();
       if (out) say(null, out, false);
@@ -360,7 +365,7 @@
   /* ---------- Bar buttons ---------- */
   $("btnSound").addEventListener("click", function () {
     S.sound = !S.sound;
-    if (S.sound) { audio(); SFX.blip(); }
+    if (S.sound) { audio(); SFX.blip(); track("sound_on"); }
     this.textContent = S.sound ? "SOUND: ON" : "SOUND: OFF";
     this.setAttribute("aria-pressed", S.sound ? "true" : "false");
   });
@@ -368,7 +373,7 @@
     S.dark = !S.dark; applyDark(); SFX.click();
     say(null, S.dark ? "Lights off. Glowing things are easier to find in the dark." : "Lights back on.", false);
   });
-  $("btnMap").addEventListener("click", openMap);
+  $("btnMap").addEventListener("click", function () { track("map_open"); openMap(); });
 
   /* ---------- Layout: fit the whole room, or pan on narrow portrait screens ---------- */
   var ZONE_CENTERS = [60, 270, 430];
@@ -378,8 +383,18 @@
     var W = 480 * S.scale, sw = stage.clientWidth;
     return Math.max(0, Math.min(W - sw, ZONE_CENTERS[z] * S.scale - sw / 2));
   }
+  var ZONE_NAMES = ["guitars", "desk", "lounge"], zoneSince = Date.now();
+  function logZoneTime() {
+    if (S.mode !== "pan") return;
+    var secs = Math.round((Date.now() - zoneSince) / 1000);
+    if (secs >= 1) track("zone_time", { zone: ZONE_NAMES[S.zone], seconds: secs });
+    zoneSince = Date.now();
+  }
+  addEventListener("pagehide", logZoneTime);
   function setZone(z) {
-    S.zone = Math.max(0, Math.min(2, z));
+    z = Math.max(0, Math.min(2, z));
+    if (z !== S.zone) logZoneTime();
+    S.zone = z;
     S.off = offsetFor(S.zone);
     pan.style.transform = "translateX(" + (-S.off) + "px)";
     zoneBtns.forEach(function (btn, i) { btn.setAttribute("aria-current", i === S.zone ? "true" : "false"); });
@@ -456,6 +471,9 @@
       ],
       true
     );
+    track("presave_popup_shown");
+    var link = mActions.querySelector("a");
+    if (link) link.addEventListener("click", function () { track("presave_click", { where: "popup_new_tab" }); });
   }
 
   /* ---------- Start ---------- */
