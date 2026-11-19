@@ -461,6 +461,25 @@
     if (seen) return;
     try { sessionStorage.setItem("elilie.presaveSeen", "1"); } catch (e) { /* ignore */ }
     var url = String(C.presave).replace(/"/g, "&quot;");
+    // Instagram, Facebook and TikTok's built-in browsers show embedded pages as a black box,
+    // so there the popup is a title card with one big presave button instead of the embed.
+    var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|musical_ly|Bytedance|TikTok|Snapchat|Twitter|Line\//i.test(navigator.userAgent || "");
+    if (inApp) {
+      openModal(
+        "PRESAVE NOW",
+        '<div class="presave-card" aria-hidden="true"><div class="pc-kicker">ELI LIE · NEW SINGLE</div><div class="pc-title">DRUNK</div><div class="pc-plats">SPOTIFY · APPLE MUSIC · YOUTUBE MUSIC · AMAZON · DEEZER</div></div>' +
+        '<p class="presave-lede">Presave it now and it lands in your library on release day.</p>',
+        [
+          { label: "PRESAVE DRUNK", href: C.presave, primary: true },
+          { label: "ENTER THE STUDIO", close: true }
+        ],
+        false
+      );
+      track("presave_popup_shown", { style: "button" });
+      var btn = mActions.querySelector("a");
+      if (btn) btn.addEventListener("click", function () { track("presave_click", { where: "popup_button" }); });
+      return;
+    }
     openModal(
       "NEW SINGLE: DRUNK",
       '<p class="presave-lede">Presave it now and it lands in your library on release day.</p>' +
@@ -471,7 +490,7 @@
       ],
       true
     );
-    track("presave_popup_shown");
+    track("presave_popup_shown", { style: "embed" });
     var link = mActions.querySelector("a");
     if (link) link.addEventListener("click", function () { track("presave_click", { where: "popup_new_tab" }); });
   }
