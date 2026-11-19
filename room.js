@@ -165,14 +165,29 @@
       el.className = "px" + (a.primary ? " primary" : "");
       el.textContent = a.label;
       if (a.close) el.addEventListener("click", closeModal);
+      if (a.copy) el.addEventListener("click", function () { copyText(a.copy, el); });
       mActions.appendChild(el);
     });
     modal.hidden = false;
     var first = modal.querySelector("a, button");
     if (first) first.focus();
   }
+  function copyText(text, btn) {
+    var done = function () { btn.textContent = "COPIED. PASTE IT IN SAFARI OR CHROME"; track("presave_click", { where: "copy_link" }); };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) done(); else btn.textContent = text;
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
   function closeModal() {
     modal.hidden = true;
+    var arr = document.querySelector(".escape-arrow"); if (arr) arr.parentNode.removeChild(arr);
     mBody.innerHTML = "";
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
@@ -456,6 +471,16 @@
   /* ---------- Presave popup (once per visit) ---------- */
   function showPresave() {
     if (!C.presave) return;
+    var wantsPresave = false;
+    try { wantsPresave = new URL(location.href).searchParams.get("presave") === "1"; } catch (e) { /* ignore */ }
+    var inAppNow = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|musical_ly|Bytedance|TikTok|Snapchat|Twitter|Line\//i.test(navigator.userAgent || "");
+    if (wantsPresave && !inAppNow) {
+      // They escaped the social app's browser: go straight to the presave page.
+      if (typeof window.gtag === "function" && C.analyticsId) window.gtag("event", "presave_click", { where: "escaped_to_browser", transport_type: "beacon" });
+      say(null, "Opening the presave...", true);
+      setTimeout(function () { window.location.replace(C.presave); }, 350);
+      return;
+    }
     var seen = false;
     try { seen = sessionStorage.getItem("elilie.presaveSeen") === "1"; } catch (e) { /* storage unavailable */ }
     if (seen) return;
@@ -465,19 +490,39 @@
     // so there the popup is a title card with one big presave button instead of the embed.
     var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|musical_ly|Bytedance|TikTok|Snapchat|Twitter|Line\//i.test(navigator.userAgent || "");
     if (inApp) {
+      // Social apps' browsers can't complete a presave (no Spotify/Apple login, and the
+      // LANDR page fails to load there). Mark the address so that when the visitor uses
+      // the app's "Open in external browser", the presave opens by itself.
+      try {
+        var u = new URL(location.href);
+        u.searchParams.set("presave", "1");
+        history.replaceState(null, "", u.toString());
+      } catch (e) { /* older browsers: the copy button still works */ }
+      var isAndroid = /Android/i.test(navigator.userAgent || "");
       openModal(
         "PRESAVE NOW",
         '<div class="presave-card" aria-hidden="true"><div class="pc-kicker">ELI LIE · NEW SINGLE</div><div class="pc-title">DRUNK</div><div class="pc-plats">SPOTIFY · APPLE MUSIC · YOUTUBE MUSIC · AMAZON · DEEZER</div></div>' +
-        '<p class="presave-lede">Presave it now and it lands in your library on release day.</p>',
+        '<p class="presave-lede">This app\'s browser can\'t finish a presave. Two taps fix it:</p>' +
+        '<ol class="presave-steps"><li>Tap <b>•••</b> at the top right.</li><li>Choose <b>' + (isAndroid ? "Open in Chrome" : "Open in external browser") + '</b>.</li></ol>' +
+        '<p class="presave-note">The presave opens on its own over there.</p>',
         [
-          { label: "PRESAVE DRUNK", href: C.presave, primary: true },
+          { label: "COPY PRESAVE LINK", primary: true, copy: C.presave },
           { label: "ENTER THE STUDIO", close: true }
         ],
         false
       );
-      track("presave_popup_shown", { style: "button" });
-      var btn = mActions.querySelector("a");
-      if (btn) btn.addEventListener("click", function () { track("presave_click", { where: "popup_button" }); });
+      var arrow = document.createElement("div");
+      arrow.className = "escape-arrow"; arrow.setAttribute("aria-hidden", "true");
+      arrow.innerHTML = '<svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges"><path d="M3 0h8v8H9V3.4L1.4 11 0 9.6 7.6 2H3z" fill="#ffc857"/></svg>';
+      document.body.appendChild(arrow);
+      var removeArrow = function () { if (arrow.parentNode) arrow.parentNode.removeChild(arrow); };
+      modal.addEventListener("click", function () { if (modal.hidden) removeArrow(); });
+      mActions.addEventListener("click", function () { setTimeout(function () { if (modal.hidden) removeArrow(); }, 0); });
+      var enter = mActions.querySelector("button:not(.primary)");
+      if (enter) enter.addEventListener("click", function () {
+        try { var v = new URL(location.href); v.searchParams.delete("presave"); history.replaceState(null, "", v.toString()); } catch (e) { /* ignore */ }
+      });
+      track("presave_popup_shown", { style: "escape" });
       return;
     }
     openModal(
