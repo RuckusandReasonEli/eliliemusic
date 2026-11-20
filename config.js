@@ -34,15 +34,9 @@ window.ELI_CONFIG = {
 
   // Artist profile links: shown on the Music page under "Find Eli Lie on".
   profiles: [
-    { name: "Spotify", url: "" },
-    { name: "Apple Music", url: "" },
-    { name: "YouTube Music", url: "" },
-    { name: "Amazon Music", url: "" },
-    { name: "Tidal", url: "" },
-    { name: "Deezer", url: "" },
-    { name: "Pandora", url: "" },
-    { name: "Bandcamp", url: "" },
-    { name: "SoundCloud", url: "" }
+    { name: "Spotify", url: "https://open.spotify.com/artist/37noPbjdZIC0bUcoB4f97J" },
+    { name: "Apple Music", url: "https://music.apple.com/us/artist/eli-lie/1729232023" },
+    { name: "YouTube Music", url: "https://music.youtube.com/channel/UCnYQ4YGuhtGQ68Ql7Toh-Hw" }
   ],
 
   // Releases: newest first. Each one gets its own row of platform buttons.
