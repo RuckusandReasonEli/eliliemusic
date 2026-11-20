@@ -468,76 +468,38 @@
   stage.addEventListener("pointercancel", endDrag);
   stage.addEventListener("click", function (e) { if (suppressClick) { e.stopPropagation(); e.preventDefault(); } }, true);
 
-  /* ---------- Presave popup (once per visit) ---------- */
-  function showPresave() {
-    if (!C.presave) return;
-    var wantsPresave = false;
-    try { wantsPresave = new URL(location.href).searchParams.get("presave") === "1"; } catch (e) { /* ignore */ }
-    var inAppNow = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|musical_ly|Bytedance|TikTok|Snapchat|Twitter|Line\//i.test(navigator.userAgent || "");
-    if (wantsPresave && !inAppNow) {
-      // They escaped the social app's browser: go straight to the presave page.
-      if (typeof window.gtag === "function" && C.analyticsId) window.gtag("event", "presave_click", { where: "escaped_to_browser", transport_type: "beacon" });
-      say(null, "Opening the presave...", true);
-      setTimeout(function () { window.location.replace(C.presave); }, 350);
-      return;
-    }
+  /* ---------- "Out now" popup (once per visit) ---------- */
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function showRelease() {
+    var R = C.release;
+    if (!R || !R.links || !R.links.length) return;
     var seen = false;
-    try { seen = sessionStorage.getItem("elilie.presaveSeen") === "1"; } catch (e) { /* storage unavailable */ }
+    try { seen = sessionStorage.getItem("elilie.releaseSeen") === "1"; } catch (e) { /* storage unavailable */ }
     if (seen) return;
-    try { sessionStorage.setItem("elilie.presaveSeen", "1"); } catch (e) { /* ignore */ }
-    var url = String(C.presave).replace(/"/g, "&quot;");
-    // Instagram, Facebook and TikTok's built-in browsers show embedded pages as a black box,
-    // so there the popup is a title card with one big presave button instead of the embed.
-    var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|musical_ly|Bytedance|TikTok|Snapchat|Twitter|Line\//i.test(navigator.userAgent || "");
-    if (inApp) {
-      // Social apps' browsers can't complete a presave (no Spotify/Apple login, and the
-      // LANDR page fails to load there). Mark the address so that when the visitor uses
-      // the app's "Open in external browser", the presave opens by itself.
-      try {
-        var u = new URL(location.href);
-        u.searchParams.set("presave", "1");
-        history.replaceState(null, "", u.toString());
-      } catch (e) { /* older browsers: the copy button still works */ }
-      var isAndroid = /Android/i.test(navigator.userAgent || "");
-      openModal(
-        "PRESAVE NOW",
-        '<div class="presave-card" aria-hidden="true"><div class="pc-kicker">ELI LIE · NEW SINGLE</div><div class="pc-title">DRUNK</div><div class="pc-plats">SPOTIFY · APPLE MUSIC · YOUTUBE MUSIC · AMAZON · DEEZER</div></div>' +
-        '<p class="presave-lede">This app\'s browser can\'t finish a presave. Two taps fix it:</p>' +
-        '<ol class="presave-steps"><li>Tap <b>•••</b> at the top right.</li><li>Choose <b>' + (isAndroid ? "Open in Chrome" : "Open in external browser") + '</b>.</li></ol>' +
-        '<p class="presave-note">The presave opens on its own over there.</p>',
-        [
-          { label: "COPY PRESAVE LINK", primary: true, copy: C.presave },
-          { label: "ENTER THE STUDIO", close: true }
-        ],
-        false
-      );
-      var arrow = document.createElement("div");
-      arrow.className = "escape-arrow"; arrow.setAttribute("aria-hidden", "true");
-      arrow.innerHTML = '<svg width="44" height="44" viewBox="0 0 11 11" shape-rendering="crispEdges"><path d="M3 0h8v8H9V3.4L1.4 11 0 9.6 7.6 2H3z" fill="#ffc857"/></svg>';
-      document.body.appendChild(arrow);
-      var removeArrow = function () { if (arrow.parentNode) arrow.parentNode.removeChild(arrow); };
-      modal.addEventListener("click", function () { if (modal.hidden) removeArrow(); });
-      mActions.addEventListener("click", function () { setTimeout(function () { if (modal.hidden) removeArrow(); }, 0); });
-      var enter = mActions.querySelector("button:not(.primary)");
-      if (enter) enter.addEventListener("click", function () {
-        try { var v = new URL(location.href); v.searchParams.delete("presave"); history.replaceState(null, "", v.toString()); } catch (e) { /* ignore */ }
-      });
-      track("presave_popup_shown", { style: "escape" });
-      return;
-    }
+    try { sessionStorage.setItem("elilie.releaseSeen", "1"); } catch (e) { /* ignore */ }
+    var cover = R.cover
+      ? '<img class="rel-cover" src="' + esc(R.cover) + '" alt="Cover art for ' + esc(R.title) + ' by Eli Lie" width="300" height="300"' +
+        ' onerror="if(this.dataset.fb){this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';}else{this.dataset.fb=1;this.src=\'' + esc(R.coverFallback || "") + '\';}">'
+      : "";
+    var card = '<div class="presave-card"' + (R.cover ? ' style="display:none"' : "") + ' aria-hidden="true"><div class="pc-kicker">ELI LIE · NEW SINGLE</div><div class="pc-title">' + esc(String(R.title).toUpperCase()) + '</div></div>';
+    var buttons = R.links.map(function (l, i) {
+      return '<a class="px' + (i === 0 ? " primary" : "") + '" href="' + esc(l.url) + '" target="_blank" rel="noopener" data-platform="' + esc(l.name) + '">' + esc(l.name.toUpperCase()) + "</a>";
+    }).join("");
+    if (R.allPlatforms) buttons += '<a class="px" href="' + esc(R.allPlatforms) + '" target="_blank" rel="noopener" data-platform="All platforms">ALL PLATFORMS</a>';
+    var more = "";
     openModal(
-      "NEW SINGLE: DRUNK",
-      '<p class="presave-lede">Presave it now and it lands in your library on release day.</p>' +
-      '<div class="presave-frame"><iframe src="' + url + '" title="Presave Drunk by Eli Lie" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write; encrypted-media"></iframe></div>',
-      [
-        { label: "OPEN PRESAVE IN A NEW TAB", href: C.presave, external: true },
-        { label: "ENTER THE STUDIO", close: true, primary: true }
-      ],
+      "OUT NOW: " + String(R.title).toUpperCase(),
+      '<div class="rel">' + cover + card +
+      '<p class="presave-lede">The new single from Eli Lie. Pick where you listen.</p>' +
+      '<div class="rel-links">' + buttons + "</div>" + more + "</div>",
+      [{ label: "ENTER THE STUDIO", close: true }],
       true
     );
-    track("presave_popup_shown", { style: "embed" });
-    var link = mActions.querySelector("a");
-    if (link) link.addEventListener("click", function () { track("presave_click", { where: "popup_new_tab" }); });
+    track("release_popup_shown", { release: R.title });
+    mBody.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[data-platform]");
+      if (a) track("listen_click", { platform: a.getAttribute("data-platform"), release: R.title, where: "popup" });
+    });
   }
 
   /* ---------- Start ---------- */
@@ -546,5 +508,5 @@
   renderPicks();
   layout();
   say(defaultLine1());
-  showPresave();
+  showRelease();
 })();

@@ -19,7 +19,8 @@
   if (rel) {
     rel.innerHTML = (C.releases || []).map(function (r, i) {
       var cover = r.cover
-        ? '<div class="cover has-img"><img src="' + esc(r.cover) + '" alt="Cover art for ' + esc(r.title) + '"></div>'
+        ? '<div class="cover has-img"><img src="' + esc(r.cover) + '" alt="Cover art for ' + esc(r.title) + '"' +
+          (r.coverFallback ? ' onerror="this.onerror=null;this.src=\'' + esc(r.coverFallback) + '\'"' : "") + '></div>'
         : '<div class="cover" aria-hidden="true"><div class="t">' + esc(r.title) + '</div><div class="k">ELI LIE</div></div>';
       var links = (r.links || []).map(function (l, j) { return linkButton(l, i === 0 && j === 0 && l.url ? "primary" : "teal"); }).join("");
       return '<article class="release">' + cover +

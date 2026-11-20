@@ -13,7 +13,7 @@ Edit **`config.js`**. It's the only file you need to touch for day-to-day update
 - `releases`: each release with its own platform links. Newest first. Add a cover by putting an image in the repo (for example `img/drunk-cover.jpg`) and setting `cover` to that path.
 - `shows`: add dates like `{ date: "2027-02-14", city: "Sacramento, CA", venue: "Venue name", tickets: "https://..." }`. With no upcoming dates, the Shows page is stamped COMING SOON.
 - `drunkGame`: where the Games page sends players.
-- `presave`: the presave page shown in the popup when the studio opens. Set to `""` to turn the popup off.
+- `release`: the "Out now" popup when the studio opens (cover, streaming buttons, all-platforms link). Set to `null` to turn it off.
 - `signupEndpoint`: the Google Apps Script web app that saves mailing list sign-ups.
 
 Any link left as `""` shows as a greyed-out **SOON** button.
@@ -41,7 +41,7 @@ Google Analytics (property **Eli Lie website**, ID in `config.js` as `analyticsI
 - `studio_object` (object, opens_page): every click on something in the studio
 - `zone_time` (zone, seconds): time in each zone on phones
 - `pick_found`, `sound_on`, `map_open`
-- `presave_popup_shown`, `presave_click`
+- `release_popup_shown`, plus `listen_click` with `where: popup` for popup taps
 - `listen_click` (platform, release) on the Music page
 - `sign_up` (method, texts_opt_in) on the mailing list page
 - `game_start_click` on the Games page
