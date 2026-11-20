@@ -146,6 +146,8 @@ a { color: var(--amber); }
 #modal .rel-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
 #modal .rel-links .px { min-height: 52px; font-size: 13px; padding: 0 8px; text-align: center; }
 #modal .rel-links .px.primary { grid-column: 1 / -1; min-height: 58px; font-size: 15px; }
+#modal .px.rel-game { display: flex; width: 100%; min-height: 52px; margin-bottom: 12px; gap: 10px; font-size: 13px; background: #6e2a36; border-color: #b8526a #3a121b #3a121b #b8526a; }
+#modal .px.rel-game:hover { background: #82343f; }
 #modal .rel-more { display: block; text-align: center; margin: 2px 0 14px; font-family: 'Silkscreen', monospace; font-size: 12px; color: var(--amber); }
 #modal .box.wide:has(.rel) .actions .px { flex: 1 1 100%; }
 #modal .maplist {list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }

@@ -487,6 +487,12 @@
     }).join("");
     if (R.allPlatforms) buttons += '<a class="px" href="' + esc(R.allPlatforms) + '" target="_blank" rel="noopener" data-platform="All platforms">ALL PLATFORMS</a>';
     var more = "";
+    if (C.drunkGame) {
+      var gameUrl = C.drunkGame + (C.drunkGame.indexOf("?") === -1 ? "?" : "&") + "utm_source=eliliemusic&utm_medium=website&utm_content=popup";
+      more = '<a class="px rel-game" href="' + esc(gameUrl) + '" target="_blank" rel="noopener" data-game="drunk">' +
+        '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true" shape-rendering="crispEdges"><path d="M3 0h12v2h2v8h-2v2H3v-2H1V2h2z" fill="#f3e6c4"/><path d="M4 4h1v1h1v1H5v1H4V6H3V5h1zM12 4h2v2h-2zM14 6h2v2h-2z" fill="#b8263a"/></svg>' +
+        'PLAY THE DRUNK GAME</a>';
+    }
     openModal(
       "OUT NOW: " + String(R.title).toUpperCase(),
       '<div class="rel">' + cover + card +
@@ -497,6 +503,7 @@
     );
     track("release_popup_shown", { release: R.title });
     mBody.addEventListener("click", function (e) {
+      if (e.target.closest && e.target.closest("a[data-game]")) track("game_start_click", { game: "drunk", where: "popup" });
       var a = e.target.closest && e.target.closest("a[data-platform]");
       if (a) track("listen_click", { platform: a.getAttribute("data-platform"), release: R.title, where: "popup" });
     });
